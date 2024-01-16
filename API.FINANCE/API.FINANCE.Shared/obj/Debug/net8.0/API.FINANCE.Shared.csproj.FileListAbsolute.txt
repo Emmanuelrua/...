@@ -1,0 +1,11 @@
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\bin\Debug\net8.0\API.FINANCE.Shared.deps.json
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\bin\Debug\net8.0\API.FINANCE.Shared.dll
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\bin\Debug\net8.0\API.FINANCE.Shared.pdb
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\obj\Debug\net8.0\API.FINANCE.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\obj\Debug\net8.0\API.FINANCE.Shared.AssemblyInfoInputs.cache
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\obj\Debug\net8.0\API.FINANCE.Shared.AssemblyInfo.cs
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\obj\Debug\net8.0\API.FINANCE.Shared.csproj.CoreCompileInputs.cache
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\obj\Debug\net8.0\API.FINANCE.Shared.dll
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\obj\Debug\net8.0\refint\API.FINANCE.Shared.dll
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\obj\Debug\net8.0\API.FINANCE.Shared.pdb
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.Shared\obj\Debug\net8.0\ref\API.FINANCE.Shared.dll
