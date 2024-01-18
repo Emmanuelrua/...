@@ -2,6 +2,7 @@
 using API.FINANCE.Shared.Auth;
 using API.FINANCE.Shared.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,7 @@ namespace API.FINANCE.API.Controllers
 
             var isCreated = await _userManager.CreateAsync(user, request.Password);
 
-            if (isCreated.Succeeded)
+            if (isCreated.Succeeded) 
             {
                 await SendVerificationEmail(user)
                 ;
@@ -106,8 +107,8 @@ namespace API.FINANCE.API.Controllers
             var verificationCode = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             verificationCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(verificationCode));
 
-            var callbackURL = $"{Request.Scheme}://{Request.Host}{Url.Action("ConfirEmail", controller: "Authentication", new { UserId = user.Id, code = verificationCode })}";
-            var emailBody = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackURL)}'>clicking here</a>";
+            var callbackURL = $"{Request.Scheme}://{Request.Host}{Url.Action("ConfirEmail", controller: "Register", new { UserId = user.Id, code = verificationCode })}";
+            var emailBody = $"Please confirm your account by <b><a href='{HtmlEncoder.Default.Encode(callbackURL)}'>clicking here</a></b>";
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email", emailBody);
         }
 

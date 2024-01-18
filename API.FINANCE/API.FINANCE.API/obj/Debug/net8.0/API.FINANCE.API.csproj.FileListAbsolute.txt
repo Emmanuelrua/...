@@ -151,3 +151,4 @@ C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.API\bin\Debug\net8.0\Micro
 C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.API\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.API\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll
 C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.API\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+C:\Users\USER\Desktop\PROJECT\API.FINANCE\API.FINANCE.API\obj\Debug\net8.0\API.FINANCE.API.sourcelink.json

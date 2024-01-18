@@ -1,5 +1,8 @@
 ﻿using API.FINANCE.API.Configuration;
+using API.FINANCE.Data;
+using API.FINANCE.Shared;
 using API.FINANCE.Shared.Auth;
+using API.FINANCE.Shared.Common;
 using API.FINANCE.Shared.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -19,11 +22,13 @@ namespace API.FINANCE.API.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly JwtConfig _jwtConfig;
+        private readonly APIFinanceContext _context;
 
-        public LoginController(UserManager<IdentityUser> userManager, IOptions<JwtConfig> JwtConfig)
+        public LoginController(UserManager<IdentityUser> userManager, IOptions<JwtConfig> JwtConfig,APIFinanceContext context)
         {
             _userManager = userManager;
             _jwtConfig = JwtConfig.Value;
+            _context = context;
         }
 
         [HttpPost("Login")]
@@ -56,13 +61,12 @@ namespace API.FINANCE.API.Controllers
                     Errors = new List<string>() { "Invalid Credentials" },
                     Result = false
                 });
-            var token = GenerateToken(existingUser);
 
-            return Ok(new AuthResult { Token = token, Result = true });
+            return Ok(GenerateToken(existingUser));
         }
 
 
-        private string GenerateToken(IdentityUser user)
+        private async Task<AuthResult> GenerateToken(IdentityUser user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -78,13 +82,36 @@ namespace API.FINANCE.API.Controllers
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                             new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
                         })),
-                Expires = DateTime.UtcNow.AddDays(8),
+                Expires = DateTime.UtcNow.Add(_jwtConfig.ExpiryTime),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Key), SecurityAlgorithms.HmacSha256)
             };
 
             var Token = jwtTokenHandler.CreateToken(tokenDescriptor);
 
-            return jwtTokenHandler.WriteToken(Token);
+            var jwtToken=jwtTokenHandler.WriteToken(Token);
+
+            var refreshToken = new RefreshToken
+            {
+                JwtId = Token.Id,
+                Token = RandomGenerator.GenerateRandomString(23),
+                AddedDate = DateTime.UtcNow,
+                IsExpired = DateTime.UtcNow.AddDays(30),
+                IsRevoked = false,
+                IsUsed = false,
+                UserId = user.Id
+
+            };
+
+            await _context.RefreshTokens.AddAsync(refreshToken);
+            await _context.SaveChangesAsync();
+
+
+            return new AuthResult
+            {
+                Token = jwtToken,
+                refreshToken = refreshToken.Token,
+                Result = true
+            }; ;
 
         }
     }

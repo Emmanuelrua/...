@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 
 namespace API.FINANCE.Data
 {
-    public class APIFinanceContext : IdentityDbContext 
+    public class APIFinanceContext : IdentityDbContext
     {
         public APIFinanceContext(DbContextOptions options) : base(options) { }
-        
-        public DbSet<Category> Categories {  get; set; }
+
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
