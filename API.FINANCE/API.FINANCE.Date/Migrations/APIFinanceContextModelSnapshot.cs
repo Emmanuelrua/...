@@ -54,6 +54,31 @@ namespace API.FINANCE.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("API.FINANCE.Shared.MySalary", b =>
+                {
+                    b.Property<string>("SalaryId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Salary")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SalaryId");
+
+                    b.ToTable("Salaries");
+                });
+
             modelBuilder.Entity("API.FINANCE.Shared.RefreshToken", b =>
                 {
                     b.Property<int>("Id")

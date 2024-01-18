@@ -62,7 +62,7 @@ namespace API.FINANCE.API.Controllers
                     Result = false
                 });
 
-            return Ok(GenerateToken(existingUser));
+            return Ok(await GenerateToken(existingUser));
         }
 
 
