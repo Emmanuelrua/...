@@ -18,5 +18,7 @@ namespace API.FINANCE.Shared
         public string NameCategory { get; set; }
         public int Money { get; set; }
         public string DescriptionCategory { get; set; }
+        public DateTime AddedDate { get; set; }
+        public DateTime IsExpired { get; set; }
     }
 }

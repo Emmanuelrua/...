@@ -16,7 +16,7 @@ namespace API.FINANCE.API.Controllers
     {
         private readonly APIFinanceContext _context;
 
-        public SalaryController(APIFinanceContext context, UserManager<IdentityUser> userManager)
+        public SalaryController(APIFinanceContext context)
         {
             _context = context;
         }
@@ -116,10 +116,26 @@ namespace API.FINANCE.API.Controllers
                 });
             }
 
-            ExistSalary.Salary = request.Salary;
+            var CategoryList = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
+            int WorthList = 0;
+            foreach (var worth in CategoryList)
+            {
+               WorthList += worth.Money;
+            }
+
+            ExistSalary.Salary = request.Salary-WorthList;
             ExistSalary.Message = request.Message;
 
             await _context.SaveChangesAsync();
+
+            if (ExistSalary.Salary < 0)
+            {
+                return BadRequest(new AuthResultCategory()
+                {
+                    Result = true,
+                    Errors = new List<string>() { "It is recommended to lower expenses, since I am having losses" }
+                });
+            }
 
             return Ok(new AuthResultCategory()
             {

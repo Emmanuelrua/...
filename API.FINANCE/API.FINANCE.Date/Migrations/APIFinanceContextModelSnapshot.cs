@@ -30,9 +30,15 @@ namespace API.FINANCE.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
 
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("DescriptionCategory")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("IsExpired")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Money")
                         .HasColumnType("int");

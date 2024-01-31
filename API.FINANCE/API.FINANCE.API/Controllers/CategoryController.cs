@@ -2,6 +2,7 @@
 using API.FINANCE.Data.Migrations;
 using API.FINANCE.Shared;
 using API.FINANCE.Shared.Auth;
+using API.FINANCE.Shared.CategoryMethods.verifications;
 using API.FINANCE.Shared.DTOs.CategoriesRequest;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,7 @@ namespace API.FINANCE.API.Controllers
     {
         private readonly APIFinanceContext _context;
 
-        public CategoryController(APIFinanceContext context, UserManager<IdentityUser> userManager)
+        public CategoryController(APIFinanceContext context)
         {
             _context = context;
         }
@@ -42,56 +43,38 @@ namespace API.FINANCE.API.Controllers
         }
         [HttpPost("AddCategory")]
         public async Task<IActionResult> Post(CategoryRequestPost category)
-        {
+        {     
+            
             var token = await _context.RefreshTokens.FirstOrDefaultAsync(f => f.Token == category.Token);
+            MySalary? ExistSalary = null;
 
-            if (token == null)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "Token invalided" }
-                });
-
-            if (category.Money <= 0)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "Money invalided" }
-                });
-
-            var ExistSalary = await _context.Salaries.FirstOrDefaultAsync(f => f.UserId == token.UserId);
-
-            if (ExistSalary == null)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "you don't have a salary created" }
-                });
-
-            if (ExistSalary.Salary < category.Money)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "you don't have Money" }
-                });
-
-            var newCategory = new Category()
+            if (token != null)
             {
-                Token = token.Token,
-                UserId = token.UserId,
-                NameCategory = category.NameCategory,
-                Money = category.Money,
-                DescriptionCategory = category.DescriptionCategory
-            };
+                ExistSalary = await _context.Salaries.FirstOrDefaultAsync(f => f.UserId == token.UserId);
+            }
 
-            ExistSalary.Salary = ExistSalary.Salary - category.Money;
-            await _context.Categories.AddAsync(newCategory);
-            await _context.SaveChangesAsync();
+            AuthResultCategory result = await CategoryVerificationsPost.verificationPost(category,token, ExistSalary);
 
-            return Ok(new AuthResultCategory()
+            if (result.Result == true)
             {
-                Result = true,
-            });
+                var newCategory = new Category()
+                {
+                    Token = token.Token,
+                    UserId = token.UserId,
+                    NameCategory = category.NameCategory,
+                    Money = category.Money,
+                    DescriptionCategory = category.DescriptionCategory,
+                    AddedDate = DateTime.UtcNow,
+                    IsExpired = DateTime.UtcNow.AddDays(30)
+                };
+
+                ExistSalary.Salary = ExistSalary.Salary - category.Money;
+                await _context.Categories.AddAsync(newCategory);
+                await _context.SaveChangesAsync();
+
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(CategoryRequestDelete category)
@@ -142,54 +125,37 @@ namespace API.FINANCE.API.Controllers
         {
             var token = await _context.RefreshTokens.FirstOrDefaultAsync(f => f.Token == category.Token);
 
-            if (token == null)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "Token invalided" }
-                });
+            List<Category>? CategoryList = null;     MySalary? ExistSalary = null;        Category? CategoryUpdate = null;
 
-            if (category.Money <= 0)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "Money invalided" }
-                });
-
-            var Category = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
-
-            var ExistSalary = await _context.Salaries.FirstOrDefaultAsync(f => f.UserId == token.UserId);
-
-            var CategoryUpdate = _context.Categories.FirstOrDefault(b => b.NameCategory == category.NameCategory);
-
-            if (CategoryUpdate == null)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "you don't have a category" }
-                });
-
-            if (ExistSalary.Salary < category.Money)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "you don't have Money" }
-                });
-
-            var Totalcategories = CategoryUpdate.Money - category.Money;
-
-            ExistSalary.Salary = ExistSalary.Salary + Totalcategories;
-
-            CategoryUpdate.Money = category.Money;
-
-            CategoryUpdate.DescriptionCategory = category.DescriptionCategory;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new AuthResultCategory()
+            if (token != null)
             {
-                Result = true,
-            });
+                CategoryList = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
+
+                ExistSalary = await _context.Salaries.FirstOrDefaultAsync(f => f.UserId == token.UserId);
+
+                CategoryUpdate = _context.Categories.FirstOrDefault(b => b.NameCategory == category.NameCategory);
+            }
+
+            AuthResultCategory result = await CategoryVerificationsPut.verificationPut(token, category, ExistSalary, CategoryUpdate);
+
+            if (result.Result == true)
+            {
+                var Totalcategories = CategoryUpdate.Money - category.Money;
+
+                ExistSalary.Salary = ExistSalary.Salary + Totalcategories;
+
+                CategoryUpdate.Money = category.Money;
+
+                CategoryUpdate.DescriptionCategory = category.DescriptionCategory;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new AuthResultCategory()
+                {
+                    Result = true,
+                });
+            }
+            return BadRequest(result);
         }
     }
 }
