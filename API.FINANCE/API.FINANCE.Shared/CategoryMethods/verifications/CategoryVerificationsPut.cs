@@ -30,14 +30,14 @@ namespace API.FINANCE.Shared.CategoryMethods.verifications
                 return new AuthResultCategory()
                 {
                     Result = false,
-                    Errors = new List<string>() { "you don't have a category" }
+                    Errors = new List<string>() { "you don't have that category" }
                 };
 
-            if (ExistSalary.Salary < category.Money)
+            if (ExistSalary.Salary + categoryUpdate.Money < category.Money)
                 return new AuthResultCategory()
                 {
-                    Result = false,
-                    Errors = new List<string>() { "you don't have Money" }
+                    Result = true,
+                    Errors = new List<string>() { "It is recommended to lower expenses, since I am having losses" }
                 };
 
             return new AuthResultCategory()

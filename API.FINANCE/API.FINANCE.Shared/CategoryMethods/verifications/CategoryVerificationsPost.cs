@@ -7,8 +7,16 @@ namespace API.FINANCE.Shared.CategoryMethods.verifications
 {
     public static class CategoryVerificationsPost
     {
-        public async static Task<AuthResultCategory> verificationPost(CategoryRequestPost category, RefreshToken token, MySalary ExistSalary)
+        public async static Task<AuthResultCategory> verificationPost(CategoryRequestPost category, RefreshToken token, MySalary ExistSalary, bool CategoryPost)
         {
+            if (CategoryPost)
+            {
+                return new AuthResultCategory()
+                {
+                    Result = false,
+                    Errors = new List<string>() { "You already have a category with that name" }
+                };
+            }
 
             if (token == null)
                 return new AuthResultCategory()
