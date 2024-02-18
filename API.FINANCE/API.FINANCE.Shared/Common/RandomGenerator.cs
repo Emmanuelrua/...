@@ -11,7 +11,7 @@ namespace API.FINANCE.Shared.Common
         public static string GenerateRandomString(int length)
         {
             var random = new Random();
-            var chars = "ABCDRFGHIJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz$*.#_";
+            var chars = "ABCDRFGHIJKLMNOPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz%";
 
             return new string(Enumerable.Repeat(chars, length).Select(S=> S[random.Next(S.Length)]).ToArray());
         }

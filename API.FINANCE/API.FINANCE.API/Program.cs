@@ -21,6 +21,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin", builder =>
+    {
+        builder.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
+
+    });
+});
+
 //DataBase
 builder.Services.AddDbContext<APIFinanceContext>(options =>
                  options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection")));
@@ -85,6 +94,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAnyOrigin");
 
 app.UseHttpsRedirection();
 

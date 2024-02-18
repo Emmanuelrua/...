@@ -1,14 +1,18 @@
 ﻿using API.FINANCE.API.Configuration;
 using API.FINANCE.Shared.Auth;
 using API.FINANCE.Shared.DTOs;
+using API.FINANCE.Shared.HtmlEmail;
+using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -57,6 +61,7 @@ namespace API.FINANCE.API.Controllers
             var isCreated = await _userManager.CreateAsync(user, request.Password);
 
             if (isCreated.Succeeded) 
+
             {
                 await SendVerificationEmail(user)
                 ;
@@ -82,33 +87,39 @@ namespace API.FINANCE.API.Controllers
         [HttpGet("ConfirEmail")]
         public async Task<IActionResult> ConfirEmail(string userId, string code)
         {
+            string? status= null;
+
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(code))
-                return BadRequest(new AuthResult
-                {
-                    Errors = new List<string>() { "Invalid email confirmation url" },
-                    Result = false
-                });
+                return BadRequest(status = HtmlServicesThank.EstructureFalse());
+
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
-                return NotFound($"Unable to load user with id '{userId}'.");
+                return NotFound(status = HtmlServicesThank.EstructureFalse());
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
 
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
-            var status = result.Succeeded ? "Thank you for confirming your email." : "There has been an error confirming your email.";
+            if (result.Succeeded)
+            {
+                status =  HtmlServicesThank.EstructureTrue() ;
+            }
+            else
+            {
+                status =  HtmlServicesThank.EstructureFalse() ;
+            }
 
-            return Ok(status);
+            return Content(status, "text/html"); ;
         }
-
+         
         private async Task SendVerificationEmail(IdentityUser user)
         {
             var verificationCode = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             verificationCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(verificationCode));
 
             var callbackURL = $"{Request.Scheme}://{Request.Host}{Url.Action("ConfirEmail", controller: "Register", new { UserId = user.Id, code = verificationCode })}";
-            var emailBody = $"Please confirm your account by <b><a href='{HtmlEncoder.Default.Encode(callbackURL)}'>clicking here</a></b>";
+            var emailBody = HtmlServicesRegister.Estructure(callbackURL);
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email", emailBody);
         }
 
