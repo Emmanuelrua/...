@@ -1,9 +1,8 @@
-﻿using API.FINANCE.Shared;
-using API.FINANCE.Shared.Auth;
+﻿using API.FINANCE.Shared.Auth;
 using API.FINANCE.Shared.DTOs.CategoriesRequest;
 
 
-namespace API.FINANCE.Shared.CategoryMethods.verifications
+namespace API.FINANCE.Shared.Methods.CategoryMethods.verifications
 {
     public static class CategoryVerificationsPost
     {

@@ -2,8 +2,10 @@
 using API.FINANCE.Data.Migrations;
 using API.FINANCE.Shared;
 using API.FINANCE.Shared.Auth;
-using API.FINANCE.Shared.CategoryMethods.verifications;
 using API.FINANCE.Shared.DTOs.CategoriesRequest;
+using API.FINANCE.Shared.Methods.CategoryMethods.verifications;
+using API.FINANCE.Shared.Methods.PercentageMethods.Category;
+using API.FINANCE.Shared.Methods.PercentageMethods.Return;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +15,7 @@ using System.Linq;
 
 namespace API.FINANCE.API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase
@@ -65,10 +67,11 @@ namespace API.FINANCE.API.Controllers
                 }
             }
 
-            AuthResultCategory result = await CategoryVerificationsPost.verificationPost(category,token, ExistSalary, CategoryPost );
+            AuthResultCategory result = await CategoryVerificationsPost.verificationPost(category,token, ExistSalary, CategoryPost);
 
             if (result.Result == true)
             {
+                var Percentage = await Operation.operation(ExistSalary,category.Money);
                 var newCategory = new Category()
                 {
                     Token = token.Token,
@@ -77,10 +80,12 @@ namespace API.FINANCE.API.Controllers
                     Money = category.Money,
                     DescriptionCategory = category.DescriptionCategory,
                     AddedDate = DateTime.UtcNow,
-                    IsExpired = DateTime.UtcNow.AddDays(30)
+                    IsExpired = DateTime.UtcNow.AddDays(30),
+                    Percentage = Percentage.PercentageCategory
                 };
 
                 ExistSalary.Salary -= category.Money;
+                ExistSalary.Percentage = Percentage.PercentageSalary;
                 await _context.Categories.AddAsync(newCategory);
                 await _context.SaveChangesAsync();
 
@@ -88,7 +93,7 @@ namespace API.FINANCE.API.Controllers
             }
             return BadRequest(result);
         }
-        [HttpDelete("Delete")]
+        [HttpDelete("DeleteCategory")]
         public async Task<IActionResult> Delete(CategoryRequestDelete category)
         {
             var token = await _context.RefreshTokens.FirstOrDefaultAsync(f => f.Token == category.Token);
@@ -116,8 +121,10 @@ namespace API.FINANCE.API.Controllers
 
             if (result.Result)
             {
-                ExistSalary.Salary += CategoryDelete.Money;
+                var Percentage = await Operation.operation(ExistSalary, CategoryDelete.Money);
 
+                ExistSalary.Salary += CategoryDelete.Money;
+                ExistSalary.Percentage += Percentage.PercentageCategory;
                 _context.Categories.Remove(CategoryDelete);
                 await _context.SaveChangesAsync();
 
@@ -154,11 +161,15 @@ namespace API.FINANCE.API.Controllers
 
             if (result.Result)
             {
+                var Percentage = await Operation.operation(ExistSalary, category.Money);
                 var Totalcategories = CategoryUpdate.Money - category.Money; 
+                var TotalPercentege= CategoryUpdate.Percentage - Percentage.PercentageCategory; 
 
-                ExistSalary.Salary += Totalcategories;  
+                ExistSalary.Salary += Totalcategories;
+                ExistSalary.Percentage += TotalPercentege;
 
                 CategoryUpdate.Money = category.Money;
+                CategoryUpdate.Percentage = Percentage.PercentageCategory;
 
                 CategoryUpdate.DescriptionCategory = category.DescriptionCategory;
 

@@ -47,6 +47,9 @@ namespace API.FINANCE.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("Percentage")
+                        .HasColumnType("float");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -60,6 +63,39 @@ namespace API.FINANCE.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("API.FINANCE.Shared.Foro", b =>
+                {
+                    b.Property<int>("ForoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ForoId"));
+
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("NameUser")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ForoId");
+
+                    b.ToTable("Foro");
+                });
+
             modelBuilder.Entity("API.FINANCE.Shared.MySalary", b =>
                 {
                     b.Property<string>("SalaryId")
@@ -68,6 +104,9 @@ namespace API.FINANCE.Data.Migrations
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Percentage")
+                        .HasColumnType("float");
 
                     b.Property<int>("Salary")
                         .HasColumnType("int");

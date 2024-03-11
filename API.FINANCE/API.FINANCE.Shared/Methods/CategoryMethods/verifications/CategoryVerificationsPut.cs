@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace API.FINANCE.Shared.CategoryMethods.verifications
+namespace API.FINANCE.Shared.Methods.CategoryMethods.verifications
 {
-    public class CategoryVerificationsDelete
+    public static class CategoryVerificationsPut
     {
-        public async static Task<AuthResultCategory> verificationDelete(RefreshToken token,Category CategoryDelete, MySalary ExistSalary)
+        public async static Task<AuthResultCategory> verificationPut(RefreshToken token, CategoryRequestPost category, MySalary ExistSalary, Category categoryUpdate)
         {
             if (token == null)
                 return new AuthResultCategory()
@@ -19,25 +19,32 @@ namespace API.FINANCE.Shared.CategoryMethods.verifications
                     Errors = new List<string>() { "Token invalided" }
                 };
 
-            if (ExistSalary == null)
+            if (category.Money <= 0)
                 return new AuthResultCategory()
                 {
                     Result = false,
-                    Errors = new List<string>() { "you don't have a salary" }
-
-
+                    Errors = new List<string>() { "Money invalided" }
                 };
-            if (CategoryDelete == null)
+
+            if (categoryUpdate == null)
                 return new AuthResultCategory()
                 {
                     Result = false,
                     Errors = new List<string>() { "you don't have that category" }
                 };
 
+            if (ExistSalary.Salary + categoryUpdate.Money < category.Money)
+                return new AuthResultCategory()
+                {
+                    Result = true,
+                    Errors = new List<string>() { "It is recommended to lower expenses, since I am having losses" }
+                };
+
             return new AuthResultCategory()
             {
-                Result = true
+                Result = true,
             };
+
         }
     }
 }

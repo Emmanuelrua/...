@@ -3,6 +3,7 @@ using API.FINANCE.Shared;
 using API.FINANCE.Shared.Auth;
 using API.FINANCE.Shared.Common;
 using API.FINANCE.Shared.DTOs.MySalaryRequest;
+using API.FINANCE.Shared.Methods.PercentageMethods.Operation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +77,7 @@ namespace API.FINANCE.API.Controllers
                 Salary=request.Salary,
                 Token=token.Token,
                 Message=request.Message,
+                Percentage=100
             };
 
             await _context.Salaries.AddAsync(newSalary);
@@ -117,12 +119,22 @@ namespace API.FINANCE.API.Controllers
             }
 
             var CategoryList = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
-            int WorthList = 0;
+            int WorthList = 0; double TotalPercentage = 0;
+
             foreach (var worth in CategoryList)
             {
-               WorthList += worth.Money;
-            }
+                var Percentage = await OperationPutSalary.operation(request, worth.Money);
+                worth.Percentage = Percentage;
 
+                await _context.SaveChangesAsync();
+            }
+            foreach (var worth in CategoryList)
+            {
+                TotalPercentage += worth.Percentage;
+                WorthList += worth.Money;
+            }
+              
+            ExistSalary.Percentage = 100 - TotalPercentage;
             ExistSalary.Salary = request.Salary-WorthList;
             ExistSalary.Message = request.Message;
 
@@ -130,7 +142,7 @@ namespace API.FINANCE.API.Controllers
 
             if (ExistSalary.Salary < 0)
             {
-                return BadRequest(new AuthResultCategory()
+                return Ok(new AuthResultCategory()
                 {
                     Result = true,
                     Errors = new List<string>() { "It is recommended to lower expenses, since I am having losses" }

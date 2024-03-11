@@ -20,5 +20,6 @@ namespace API.FINANCE.Shared
         public string DescriptionCategory { get; set; }
         public DateTime AddedDate { get; set; }
         public DateTime IsExpired { get; set; }
+        public double Percentage { get; set; }
     }
 }

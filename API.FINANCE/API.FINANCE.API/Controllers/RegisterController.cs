@@ -1,8 +1,9 @@
 ﻿using API.FINANCE.API.Configuration;
 using API.FINANCE.Shared.Auth;
-using API.FINANCE.Shared.DTOs;
+using API.FINANCE.Shared.DTOs.LoginAndRegisterRequest;
 using API.FINANCE.Shared.HtmlEmail;
 using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;

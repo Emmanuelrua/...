@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace API.FINANCE.Shared.DTOs
+namespace API.FINANCE.Shared.DTOs.LoginAndRegisterRequest
 {
     public class UserLoginRequestDto
     {

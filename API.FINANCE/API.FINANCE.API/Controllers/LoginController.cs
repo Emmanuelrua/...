@@ -3,7 +3,7 @@ using API.FINANCE.Data;
 using API.FINANCE.Shared;
 using API.FINANCE.Shared.Auth;
 using API.FINANCE.Shared.Common;
-using API.FINANCE.Shared.DTOs;
+using API.FINANCE.Shared.DTOs.LoginAndRegisterRequest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;

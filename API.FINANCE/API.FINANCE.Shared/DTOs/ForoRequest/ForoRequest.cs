@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace API.FINANCE.Shared.DTOs
+namespace API.FINANCE.Shared.DTOs.ForoRequest
 {
-    public class TokenRequest
+    public class ForoRequest
     {
-        [Required]
         public string Token { get; set; }
-        [Required]
-        public string RefreshToken { get; set; }
+        [StringLength(500)]
+        public string Message { get; set; }
     }
 }

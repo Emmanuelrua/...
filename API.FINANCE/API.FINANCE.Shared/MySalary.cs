@@ -15,5 +15,6 @@ namespace API.FINANCE.Shared
         public string Token { get; set; }
         public int  Salary { get; set; }
         public string Message { get; set; }
+        public double Percentage { get; set; }
     }
 }
