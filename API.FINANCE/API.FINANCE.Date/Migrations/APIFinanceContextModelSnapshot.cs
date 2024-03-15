@@ -96,10 +96,57 @@ namespace API.FINANCE.Data.Migrations
                     b.ToTable("Foro");
                 });
 
+            modelBuilder.Entity("API.FINANCE.Shared.Income", b =>
+                {
+                    b.Property<int>("IncomeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IncomeId"));
+
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DescriptionIncome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("IsExpired")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Money")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NameIncome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Percentage")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IncomeId");
+
+                    b.ToTable("Incomes");
+                });
+
             modelBuilder.Entity("API.FINANCE.Shared.MySalary", b =>
                 {
                     b.Property<string>("SalaryId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("IsExpired")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -109,6 +156,9 @@ namespace API.FINANCE.Data.Migrations
                         .HasColumnType("float");
 
                     b.Property<int>("Salary")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SalaryIn")
                         .HasColumnType("int");
 
                     b.Property<string>("Token")

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace API.FINANCE.Shared.Methods.PercentageMethods.Category
 {
-    public class Operation
+    public class OperationCategoty
     {
-        public async static Task<ReturnPercentage> operation(MySalary ExistSalary, double Money)
+        public async static Task<ReturnPercentage> operationCategory(MySalary ExistSalary, double Money)
         {
             double ValuePercentageCategory = (ExistSalary.Percentage * Money) / ExistSalary.Salary;
             double ValuePercentageSalary = ExistSalary.Percentage - ValuePercentageCategory;

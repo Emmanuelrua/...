@@ -6,8 +6,24 @@ namespace API.FINANCE.Shared.Methods.CategoryMethods.verifications
 {
     public static class CategoryVerificationsPost
     {
-        public async static Task<AuthResultCategory> verificationPost(CategoryRequestPost category, RefreshToken token, MySalary ExistSalary, bool CategoryPost)
+        public async static Task<AuthResultCategory> verificationPost(CategoryRequestPost category, RefreshToken token, MySalary ExistSalary,List<Category> CategoryList, bool CategoryPost)
         {
+            if (token == null)
+                return new AuthResultCategory()
+                {
+                    Result = false,
+                    Errors = new List<string>() { "Token invalided" }
+                };
+
+
+            foreach (var CategoryName in CategoryList)
+            {
+                if (CategoryName.NameCategory == category.NameCategory)
+                {
+                    CategoryPost = true;
+                }
+
+            }
             if (CategoryPost)
             {
                 return new AuthResultCategory()
@@ -17,12 +33,6 @@ namespace API.FINANCE.Shared.Methods.CategoryMethods.verifications
                 };
             }
 
-            if (token == null)
-                return new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "Token invalided" }
-                };
 
             if (category.Money <= 0)
                 return new AuthResultCategory()

@@ -18,6 +18,7 @@ namespace API.FINANCE.Data
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<MySalary> Salaries { get; set; }
         public DbSet<Foro> Foro { get; set; }
+        public DbSet<Income> Incomes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

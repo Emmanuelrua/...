@@ -25,7 +25,6 @@ namespace API.FINANCE.Shared.Methods.CategoryMethods.verifications
                     Result = false,
                     Errors = new List<string>() { "you don't have a salary" }
 
-
                 };
             if (CategoryDelete == null)
                 return new AuthResultCategory()

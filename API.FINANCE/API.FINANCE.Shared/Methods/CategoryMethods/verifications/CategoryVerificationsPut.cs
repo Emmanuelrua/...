@@ -10,7 +10,7 @@ namespace API.FINANCE.Shared.Methods.CategoryMethods.verifications
 {
     public static class CategoryVerificationsPut
     {
-        public async static Task<AuthResultCategory> verificationPut(RefreshToken token, CategoryRequestPost category, MySalary ExistSalary, Category categoryUpdate)
+        public async static Task<AuthResultCategory> verificationPut(RefreshToken token, CategoryRequestPost category, MySalary ExistSalary, Category categoryUpdate, List<Category> categoryList)
         {
             if (token == null)
                 return new AuthResultCategory()
@@ -40,9 +40,16 @@ namespace API.FINANCE.Shared.Methods.CategoryMethods.verifications
                     Errors = new List<string>() { "It is recommended to lower expenses, since I am having losses" }
                 };
 
+            if (categoryList == null)
+                return new AuthResultCategory()
+                {
+                    Result = false,
+                    Errors = new List<string>() { "You don't have categories yet" }
+                };
+
             return new AuthResultCategory()
             {
-                Result = true,
+                Result = true
             };
 
         }

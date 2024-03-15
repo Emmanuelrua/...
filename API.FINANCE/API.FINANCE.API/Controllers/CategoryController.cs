@@ -31,16 +31,17 @@ namespace API.FINANCE.API.Controllers
         {
             var token = await _context.RefreshTokens.FirstOrDefaultAsync(f => f.Token == Token);
 
-            if (token == null)
-                return BadRequest(new AuthResultCategory()
-                {
-                    Result = false,
-                    Errors = new List<string>() { "Token invalided" }
-                });
+            List<Category>? categoryGet = null;
 
-            var Category = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
+            if (token != null)
+                 categoryGet = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
+ 
+            var result = await CategoryVerificationsGet.verificationGet(token);
 
-            return Ok(Category);
+            if(result.Result) 
+                return Ok(categoryGet);
+                
+            return BadRequest(result);
 
         }
         [HttpPost("AddCategory")]
@@ -54,24 +55,15 @@ namespace API.FINANCE.API.Controllers
             if (token != null)
             {
                 CategoryList = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
-
                 ExistSalary = await _context.Salaries.FirstOrDefaultAsync(f => f.UserId == token.UserId);
 
-                foreach (var CategoryName in CategoryList)
-                {
-                    if (CategoryName.NameCategory == category.NameCategory)
-                    {
-                        CategoryPost = true;
-                    }
-
-                }
             }
 
-            AuthResultCategory result = await CategoryVerificationsPost.verificationPost(category,token, ExistSalary, CategoryPost);
+            var result = await CategoryVerificationsPost.verificationPost(category,token, ExistSalary,CategoryList,CategoryPost);
 
             if (result.Result == true)
             {
-                var Percentage = await Operation.operation(ExistSalary,category.Money);
+                var Percentage = await OperationCategoty.operationCategory(ExistSalary,category.Money);
                 var newCategory = new Category()
                 {
                     Token = token.Token,
@@ -109,19 +101,16 @@ namespace API.FINANCE.API.Controllers
                 foreach (var CategoryName in CategoryList)
                 {
                     if (CategoryName.NameCategory == category.NameCategory)
-                    {
                         CategoryDelete = CategoryName;
-                    }
-
                 }
 
             }
 
-            AuthResultCategory result = await CategoryVerificationsDelete.verificationDelete(token,CategoryDelete,ExistSalary);
+            var result = await CategoryVerificationsDelete.verificationDelete(token,CategoryDelete,ExistSalary);
 
             if (result.Result)
             {
-                var Percentage = await Operation.operation(ExistSalary, CategoryDelete.Money);
+                var Percentage = await OperationCategoty.operationCategory(ExistSalary, CategoryDelete.Money);
 
                 ExistSalary.Salary += CategoryDelete.Money;
                 ExistSalary.Percentage += Percentage.PercentageCategory;
@@ -139,29 +128,25 @@ namespace API.FINANCE.API.Controllers
         {
             var token = await _context.RefreshTokens.FirstOrDefaultAsync(f => f.Token == category.Token);
 
-            List<Category>? CategoryList = null;     MySalary? ExistSalary = null;        Category? CategoryUpdate = null;
+            List<Category>? categoryList = null;     MySalary? ExistSalary = null;     Category? CategoryUpdate = null;
 
             if (token != null)
             {
-                CategoryList = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
-
+                categoryList = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
                 ExistSalary = await _context.Salaries.FirstOrDefaultAsync(f => f.UserId == token.UserId);
         
-                foreach (var CategoryName in CategoryList)
+                foreach (var CategoryName in categoryList)
                 {
                     if (CategoryName.NameCategory == category.NameCategory)
-                    {
                         CategoryUpdate = CategoryName;
-                    }
-
                 }
             }
 
-            AuthResultCategory result = await CategoryVerificationsPut.verificationPut(token,category, ExistSalary, CategoryUpdate);
+            var result = await CategoryVerificationsPut.verificationPut(token,category, ExistSalary, CategoryUpdate, categoryList);
 
             if (result.Result)
             {
-                var Percentage = await Operation.operation(ExistSalary, category.Money);
+                var Percentage = await OperationCategoty.operationCategory(ExistSalary, category.Money);
                 var Totalcategories = CategoryUpdate.Money - category.Money; 
                 var TotalPercentege= CategoryUpdate.Percentage - Percentage.PercentageCategory; 
 
@@ -170,7 +155,6 @@ namespace API.FINANCE.API.Controllers
 
                 CategoryUpdate.Money = category.Money;
                 CategoryUpdate.Percentage = Percentage.PercentageCategory;
-
                 CategoryUpdate.DescriptionCategory = category.DescriptionCategory;
 
                 await _context.SaveChangesAsync();

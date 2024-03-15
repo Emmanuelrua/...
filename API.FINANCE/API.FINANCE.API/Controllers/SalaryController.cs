@@ -77,7 +77,10 @@ namespace API.FINANCE.API.Controllers
                 Salary=request.Salary,
                 Token=token.Token,
                 Message=request.Message,
-                Percentage=100
+                AddedDate = DateTime.UtcNow,
+                IsExpired = DateTime.UtcNow.AddDays(30),
+                SalaryIn=request.Salary,
+                Percentage =100
             };
 
             await _context.Salaries.AddAsync(newSalary);
@@ -136,6 +139,7 @@ namespace API.FINANCE.API.Controllers
               
             ExistSalary.Percentage = 100 - TotalPercentage;
             ExistSalary.Salary = request.Salary-WorthList;
+            ExistSalary.SalaryIn = request.Salary;
             ExistSalary.Message = request.Message;
 
             await _context.SaveChangesAsync();

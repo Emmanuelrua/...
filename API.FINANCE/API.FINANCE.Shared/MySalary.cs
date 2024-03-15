@@ -14,7 +14,10 @@ namespace API.FINANCE.Shared
         public string UserId { get; set; }
         public string Token { get; set; }
         public int  Salary { get; set; }
+        public int SalaryIn {  get; set; }
         public string Message { get; set; }
         public double Percentage { get; set; }
+        public DateTime AddedDate { get; set; }
+        public DateTime IsExpired { get; set; }
     }
 }
