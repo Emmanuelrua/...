@@ -122,13 +122,15 @@ namespace API.FINANCE.API.Controllers
             }
 
             var CategoryList = await _context.Categories.Where(a => a.UserId == token.UserId).ToListAsync();
+            var IncomesList = await _context.Incomes.Where(i => i.UserId == token.UserId).ToListAsync();
+
             int WorthList = 0; double TotalPercentage = 0;
+            int IncomesListT = 0; double TotalPercentageIncomes = 0;
 
             foreach (var worth in CategoryList)
             {
                 var Percentage = await OperationPutSalary.operation(request, worth.Money);
                 worth.Percentage = Percentage;
-
                 await _context.SaveChangesAsync();
             }
             foreach (var worth in CategoryList)
@@ -136,9 +138,20 @@ namespace API.FINANCE.API.Controllers
                 TotalPercentage += worth.Percentage;
                 WorthList += worth.Money;
             }
-              
-            ExistSalary.Percentage = 100 - TotalPercentage;
-            ExistSalary.Salary = request.Salary-WorthList;
+            foreach (var income in IncomesList)
+            {
+                var Percentage = await OperationPutSalary.operation(request, income.Money);
+                income.Percentage = Percentage;
+                await _context.SaveChangesAsync();
+            }
+            foreach (var income in IncomesList)
+            {
+                TotalPercentageIncomes += income.Percentage;
+                IncomesListT += income.Money;
+            }
+
+            ExistSalary.Percentage = (100 - TotalPercentage) + TotalPercentageIncomes;
+            ExistSalary.Salary = (request.Salary - WorthList) + IncomesListT;
             ExistSalary.SalaryIn = request.Salary;
             ExistSalary.Message = request.Message;
 
